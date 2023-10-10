@@ -178,6 +178,36 @@ func Test_slice2String(t *testing.T) {
 	}
 }
 
+func Test_getTerraformCmd(t *testing.T) {
+	tests := []struct {
+		name  string
+		env map[string]string
+		want  string
+	}{
+		{
+			name: "get the default terraform command",
+			env:  map[string]string{},
+			want: "terraform",
+		},
+		{
+			name: "override terraform command with TERRAFORM_CMD",
+			env:  map[string]string{"TERRAFORM_CMD": "terragrunt"},
+			want: "terragrunt",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			for k := range tt.env {
+				t.Setenv(k, tt.env[k])
+			}
+			got := getTerraformCmd()
+			if diff := cmp.Diff(got, tt.want); diff != "" {
+				t.Errorf("getTerraformCmd (-got +want):%s", diff)
+			}
+		})
+	}
+}
+
 func Test_genTargetCmd(t *testing.T) {
 	tests := []struct {
 		name   string

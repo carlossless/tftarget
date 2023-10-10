@@ -101,9 +101,18 @@ func slice2String(slice []string) string {
 	return buffer.String()
 }
 
+func getTerraformCmd() string {
+	var terraformCmd = strings.TrimSpace(os.Getenv("TERRAFORM_CMD"))
+	if terraformCmd != "" {
+		return terraformCmd
+	}
+	return "terraform"
+}
+
 func genTargetCmd(cmd *cobra.Command, action, target string) bytes.Buffer {
+	var terraformCmd = getTerraformCmd()
 	var buf bytes.Buffer
-	buf.WriteString("terraform " + action + " -target=" + target)
+	buf.WriteString(terraformCmd + " " + action + " -target=" + target)
 	p, _ := cmd.Flags().GetInt("parallel")
 	buf.WriteString(fmt.Sprintf(" --parallelism=%d", p))
 	return buf
